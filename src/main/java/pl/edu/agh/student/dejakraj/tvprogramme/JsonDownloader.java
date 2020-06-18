@@ -34,11 +34,15 @@ public class JsonDownloader {
             String data = readAll(rd);
             Gson gson = new Gson();
             JsonObj obj = gson.fromJson(data, JsonObj.class);
-            for (int i = 0; i < obj.schedule.length; i++) {
-                sh.channelList.add(obj.schedule[i].channel.name);
+            for (int i = 0; i < obj.schedule.size(); i++) {
+                sh.channelList.add(obj.schedule.get(i).channel.name);
                 ArrayList<Program> pr = new ArrayList<Program>();
-                for (int j = 0; j < obj.schedule[i].event.length; j++)
-                    pr.add(new Program(obj.schedule[i].event[j].name, obj.schedule[i].event[j].start));
+                for (int j = 0; j < obj.schedule.get(i).event.size(); j++) {
+                    String name = obj.schedule.get(i).event.get(j).name;
+                    if (!obj.schedule.get(i).event.get(j).episode_title.isEmpty())
+                        name = new String(name + " (" + obj.schedule.get(i).event.get(j).episode_title + ")");
+                    pr.add(new Program(name, obj.schedule.get(i).event.get(j).start));
+                }
                 sh.programs.add(pr);
             }
         }
@@ -51,14 +55,14 @@ public class JsonDownloader {
 
     private class JsonObj {
         public String status;
-        public JSchedule[] schedule;
+        public ArrayList<JSchedule> schedule;
         public JChannelLive[] channels_live;
         public int current_offset;
     }
 
     private class JSchedule {
         public JChannel channel;
-        public JEvents[] event;
+        public ArrayList<JEvents> event;
     }
 
     private class JEvents {

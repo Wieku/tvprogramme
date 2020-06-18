@@ -12,7 +12,7 @@ public class Main {
 
     public static void main(String[] args) {
         Schedule sh = Downloader.Download();
-        Schedule sh2 = JsonDownloader.JsonDownload("2020-06-18");
+        Schedule sh2 = JsonDownloader.JsonDownload("2020-06-20");
         logger.info(sh.channelList.toString());
         logger.info(sh2.channelList.toString());
         /*for (int i = 0; i < 5; i++) {
