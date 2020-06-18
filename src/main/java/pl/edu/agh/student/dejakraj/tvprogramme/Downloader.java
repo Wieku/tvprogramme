@@ -8,15 +8,16 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 import org.apache.logging.log4j.Logger;
 
 public class Downloader {
     private static final Logger logger = Logging.getLogger("Downloader");
 
-    public static Schedule Download()
+    public static LinkedHashMap<String, ArrayList<Program>> Download()
     {
-        Schedule sh = new Schedule();
+        LinkedHashMap<String, ArrayList<Program>> map = new LinkedHashMap<String, ArrayList<Program>>();
         try {
             Document doc = Jsoup.connect("https://tv.mail.ru/moskva/").get();
             Elements channels = doc.select("div.p-channels__item"); //get channels
@@ -28,8 +29,7 @@ public class Downloader {
                             program.select("span.p-programms__item__time-value").first().ownText())); //get program hour
                 });
                 if(!channelName.isEmpty()) { //save if not empty
-                    sh.channelList.add(channelName);
-                    sh.programs.add(channelPrograms);
+                    map.put(channelName, channelPrograms);
                 }
             });
         }
@@ -37,7 +37,7 @@ public class Downloader {
             logger.error(e);
             return null;
         }
-        return sh;
+        return map;
     }
 
 }

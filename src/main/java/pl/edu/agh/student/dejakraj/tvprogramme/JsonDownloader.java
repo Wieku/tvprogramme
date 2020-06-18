@@ -9,6 +9,7 @@ import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.net.URL;
+import java.util.LinkedHashMap;
 
 public class JsonDownloader {
     private static final Logger logger = Logging.getLogger("JsonDownloader");
@@ -22,9 +23,9 @@ public class JsonDownloader {
         return sb.toString();
     }
 
-    public static Schedule JsonDownload(String date)
+    public static LinkedHashMap<String, ArrayList<Program>> JsonDownload(String date)
     {
-        Schedule sh = new Schedule();
+        LinkedHashMap<String, ArrayList<Program>> map = new LinkedHashMap<String, ArrayList<Program>>();
         String url = "https://tv.mail.ru/ajax/index/?date=" + date; //rrrr-mm-dd format
         try{
             BufferedReader rd = new BufferedReader(new InputStreamReader(new URL(url).openStream(), Charset.forName("UTF-8")));
@@ -32,7 +33,6 @@ public class JsonDownloader {
             Gson gson = new Gson();
             JsonObj obj = gson.fromJson(data, JsonObj.class);
             for (int i = 0; i < obj.schedule.size(); i++) {
-                sh.channelList.add(obj.schedule.get(i).channel.name);
                 ArrayList<Program> pr = new ArrayList<Program>();
                 for (int j = 0; j < obj.schedule.get(i).event.size(); j++) {
                     String name = obj.schedule.get(i).event.get(j).name;
@@ -40,14 +40,14 @@ public class JsonDownloader {
                         name = new String(name + " (" + obj.schedule.get(i).event.get(j).episode_title + ")");
                     pr.add(new Program(name, obj.schedule.get(i).event.get(j).start));
                 }
-                sh.programs.add(pr);
+                map.put(obj.schedule.get(i).channel.name, pr);
             }
         }
         catch(Exception e) {
             logger.error(e);
             return null;
         }
-        return sh;
+        return map;
     }
 
     private class JsonObj {

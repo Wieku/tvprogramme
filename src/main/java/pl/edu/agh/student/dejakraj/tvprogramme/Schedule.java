@@ -1,8 +1,9 @@
 package pl.edu.agh.student.dejakraj.tvprogramme;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class Schedule {
-    public ArrayList<String> channelList = new ArrayList<String>(); //list of channel names
-    public ArrayList<ArrayList<Program>> programs = new ArrayList<ArrayList<Program>>(); //list of programs per channel
+    public LinkedHashMap<String, ArrayList<Program>> map = new LinkedHashMap<String, ArrayList<Program>>();
 }
