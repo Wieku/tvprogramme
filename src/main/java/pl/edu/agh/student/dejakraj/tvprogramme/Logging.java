@@ -24,9 +24,11 @@ public class Logging {
     static {
         consoleLayout = builder.newLayout("PatternLayout");
         consoleLayout.addAttribute("pattern", consolePattern);
+        consoleLayout.addAttribute("charset", "UTF-8");
 
         fileLayout = builder.newLayout("PatternLayout");
         fileLayout.addAttribute("pattern", filePattern);
+        fileLayout.addAttribute("charset", "UTF-8");
 
 
         AppenderComponentBuilder consoleAppender = builder.newAppender("stdout", "Console");
