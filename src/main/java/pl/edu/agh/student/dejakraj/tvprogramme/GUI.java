@@ -11,23 +11,24 @@ import java.util.LinkedHashMap;
 import org.apache.logging.log4j.Logger;
 
 public class GUI {
-    private static final Logger logger = Logging.getLogger("GUI");
-    private JFrame f;
+    private final Logger logger = Logging.getLogger("GUI");
+    private final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+    private final JFrame window;
+
     private LinkedHashMap<String, LinkedHashMap<String, ArrayList<Program>>> map = new LinkedHashMap<String, LinkedHashMap<String, ArrayList<Program>>>();
-    private JList<String> list1; //channels
-    private JList<String> list2; //dates
-    private JList<String> list3; //programs
+    private JList<String> channelList; //channels
+    private JList<String> dateList; //dates
+    private JList<String> programList; //programs
 
     public GUI(){
-        f = new JFrame("TVProgramme");
+        window = new JFrame("TVProgramme");
     }
 
     public void createAndShowGUI(){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-
         Calendar calendar = Calendar.getInstance();
 
-        String today = format.format(calendar.getTime());
+        String today = formatter.format(calendar.getTime());
         LinkedHashMap<String, ArrayList<Program>> data = JsonDownloader.JsonDownload(today);
         map.put(today, data);
 
@@ -36,16 +37,16 @@ public class GUI {
         map.get(today).forEach((key, value) -> {
             channels.addElement(key);
         });
-        list1 = new JList<>(channels);
-        list1.setSelectedIndex(0);
-        list1.setBounds(20,20, 200,500);
-        list1.addListSelectionListener(new ListSelectionListener() {
+        channelList = new JList<>(channels);
+        channelList.setSelectedIndex(0);
+        channelList.setBounds(20,20, 200,500);
+        channelList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                list3.setModel(GetProgramList(list2.getSelectedValue(), list1.getSelectedValue()));
+                programList.setModel(getProgramList(dateList.getSelectedValue(), channelList.getSelectedValue()));
             }
         });
-        f.add(list1);
+        window.add(channelList);
 
         //date list
         DefaultListModel<String> dates = new DefaultListModel<>();
@@ -53,32 +54,32 @@ public class GUI {
             if (i > 0)
                 calendar.add(Calendar.DAY_OF_MONTH, 1);
 
-            dates.addElement(format.format(calendar.getTime()));
+            dates.addElement(formatter.format(calendar.getTime()));
         }
 
-        list2 = new JList<>(dates);
-        list2.setSelectedIndex(0);
-        list2.setBounds(240,20, 700,100);
-        list2.addListSelectionListener(new ListSelectionListener() {
+        dateList = new JList<>(dates);
+        dateList.setSelectedIndex(0);
+        dateList.setBounds(240,20, 700,100);
+        dateList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                list3.setModel(GetProgramList(list2.getSelectedValue(), list1.getSelectedValue()));
+                programList.setModel(getProgramList(dateList.getSelectedValue(), channelList.getSelectedValue()));
             }
         });
-        f.add(list2);
+        window.add(dateList);
 
         //program list
-        list3 = new JList<>(GetProgramList(today, list1.getSelectedValue()));
-        list3.setBounds(240,140, 700,380);
-        f.add(list3);
+        programList = new JList<>(getProgramList(today, channelList.getSelectedValue()));
+        programList.setBounds(240,140, 700,380);
+        window.add(programList);
 
         //frame
-        f.setSize(980,600);
-        f.setLayout(null);
-        f.setVisible(true);
+        window.setSize(980,600);
+        window.setLayout(null);
+        window.setVisible(true);
     }
 
-    private DefaultListModel<String> GetProgramList(String date, String channel){
+    private DefaultListModel<String> getProgramList(String date, String channel){
         DefaultListModel<String> programs = new DefaultListModel<>();
         try {
             if(!map.containsKey(date)) {
