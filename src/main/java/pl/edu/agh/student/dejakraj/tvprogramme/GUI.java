@@ -5,7 +5,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.LinkedHashMap;
 
 import org.apache.logging.log4j.Logger;
@@ -23,9 +23,11 @@ public class GUI {
     }
 
     public void createAndShowGUI(){
-        long milis = System.currentTimeMillis();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        String today = format.format(new Date(milis));
+
+        Calendar calendar = Calendar.getInstance();
+
+        String today = format.format(calendar.getTime());
         LinkedHashMap<String, ArrayList<Program>> data = JsonDownloader.JsonDownload(today);
         map.put(today, data);
 
@@ -48,8 +50,12 @@ public class GUI {
         //date list
         DefaultListModel<String> dates = new DefaultListModel<>();
         for (int i = 0; i < 5; i++) {
-            dates.addElement(format.format(new Date(milis + i * 86400000)));
+            if (i > 0)
+                calendar.add(Calendar.DAY_OF_MONTH, 1);
+
+            dates.addElement(format.format(calendar.getTime()));
         }
+
         list2 = new JList<>(dates);
         list2.setSelectedIndex(0);
         list2.setBounds(240,20, 700,100);
