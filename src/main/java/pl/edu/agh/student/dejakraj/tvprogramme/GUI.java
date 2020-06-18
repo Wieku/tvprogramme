@@ -37,15 +37,14 @@ public class GUI {
         map.get(today).forEach((key, value) -> {
             channels.addElement(key);
         });
+
         channelList = new JList<>(channels);
         channelList.setSelectedIndex(0);
         channelList.setBounds(20,20, 200,500);
-        channelList.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                programList.setModel(getProgramList(dateList.getSelectedValue(), channelList.getSelectedValue()));
-            }
-        });
+        channelList.addListSelectionListener( e ->
+                programList.setModel(getProgramList(dateList.getSelectedValue(), channelList.getSelectedValue()))
+        );
+
         window.add(channelList);
 
         //date list
@@ -60,12 +59,9 @@ public class GUI {
         dateList = new JList<>(dates);
         dateList.setSelectedIndex(0);
         dateList.setBounds(240,20, 700,100);
-        dateList.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                programList.setModel(getProgramList(dateList.getSelectedValue(), channelList.getSelectedValue()));
-            }
-        });
+        dateList.addListSelectionListener(e ->
+                programList.setModel(getProgramList(dateList.getSelectedValue(), channelList.getSelectedValue()))
+        );
         window.add(dateList);
 
         //program list
