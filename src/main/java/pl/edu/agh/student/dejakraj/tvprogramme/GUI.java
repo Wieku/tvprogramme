@@ -12,10 +12,13 @@ public class GUI {
 
     public void createAndShowGUI(Schedule sh){
         DefaultListModel<String> li = new DefaultListModel<>();
-        JList<String> list = new JList<>(l1);
-        list.setBounds(100,100, 75,75);
+        sh.channelList.forEach((String e) -> {
+            li.addElement(e);
+        });
+        JList<String> list = new JList<>(li);
+        list.setBounds(20,20, 200,440);
         f.add(list);
-        f.setSize(400,400);
+        f.setSize(400,600);
         f.setLayout(null);
         f.setVisible(true);
     }
