@@ -59,7 +59,7 @@ public class GUI {
         constraints.gridx = 0;
         constraints.gridy = 0;
 
-        mainPanel.add(channelList, constraints);
+        mainPanel.add(new JScrollPane(channelList), constraints);
 
         //date list
         DefaultListModel<String> dates = new DefaultListModel<>();
@@ -81,7 +81,7 @@ public class GUI {
         constraints.gridx = 1;
         constraints.gridy = 0;
 
-        mainPanel.add(dateList, constraints);
+        mainPanel.add(new JScrollPane(dateList), constraints);
 
         //program list
         programList = new JList<>(getProgramList(today, channelList.getSelectedValue()));
@@ -91,12 +91,13 @@ public class GUI {
         constraints.gridx = 1;
         constraints.gridy = 1;
 
-        mainPanel.add(programList, constraints);
+        mainPanel.add(new JScrollPane(programList), constraints);
 
         //frame
         window.add(mainPanel);
         window.setSize(980,600);
         window.setLocationRelativeTo(null);
+        window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         window.setVisible(true);
     }
 
