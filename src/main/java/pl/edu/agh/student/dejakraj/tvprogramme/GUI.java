@@ -41,9 +41,10 @@ public class GUI {
 
         channelList = new JList<>(channels);
         channelList.setSelectedIndex(0);
-        channelList.addListSelectionListener( e ->
-                updateProgramList(dateList.getSelectedValue(), channelList.getSelectedValue())
-        );
+        channelList.addListSelectionListener( e -> {
+            if (e.getValueIsAdjusting())
+                updateProgramList(dateList.getSelectedValue(), channelList.getSelectedValue());
+        });
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -71,9 +72,10 @@ public class GUI {
 
         dateList = new JList<>(dates);
         dateList.setSelectedIndex(0);
-        dateList.addListSelectionListener(e ->
-                updateProgramList(dateList.getSelectedValue(), channelList.getSelectedValue())
-        );
+        dateList.addListSelectionListener( e -> {
+            if (e.getValueIsAdjusting())
+                updateProgramList(dateList.getSelectedValue(), channelList.getSelectedValue());
+        });
 
         constraints.gridheight = 1;
         constraints.gridwidth = 2;
