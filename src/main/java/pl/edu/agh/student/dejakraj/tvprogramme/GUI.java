@@ -112,7 +112,7 @@ public class GUI {
                 map.put(date, data);
             }
             map.get(date).get(channel).forEach((Program p) -> {
-                programs.addElement(p.getName() + " " + p.getHour());
+                programs.addElement(p.getHour() + " - " + p.getName());
             });
         }
         catch(Exception e) {

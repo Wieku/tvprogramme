@@ -19,6 +19,8 @@ dependencies {
 mkdir "run"
 tasks.run.workingDir = "run"
 
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
 application {
     applicationName = 'TVProgramme'
     mainClassName = 'pl.edu.agh.student.dejakraj.tvprogramme.Main'
