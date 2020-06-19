@@ -13,19 +13,11 @@ public class GUI {
     private final Logger logger = Logging.getLogger("GUI");
     private final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
-    private final JFrame window;
-
-    private LinkedHashMap<String, LinkedHashMap<String, ArrayList<Program>>> map = new LinkedHashMap<String, LinkedHashMap<String, ArrayList<Program>>>();
-
-    private JPanel mainPanel;
+    private LinkedHashMap<String, LinkedHashMap<String, ArrayList<Program>>> map = new LinkedHashMap<>();
 
     private JList<String> channelList; //channels
     private JList<String> dateList; //dates
     private JList<String> programList; //programs
-
-    public GUI(){
-        window = new JFrame("TVProgramme");
-    }
 
     public void createAndShowGUI(){
         Calendar calendar = Calendar.getInstance();
@@ -36,16 +28,21 @@ public class GUI {
 
         //channel list
         DefaultListModel<String> channels = new DefaultListModel<>();
-        map.get(today).forEach((key, value) -> {
-            channels.addElement(key);
-        });
+        map.get(today).forEach((key, value) ->
+            channels.addElement(key)
+        );
 
-        mainPanel = new JPanel(new GridBagLayout());
+
+        logger.info("Creating main panel");
+
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+
+        logger.info("Creating channel list panel");
 
         channelList = new JList<>(channels);
         channelList.setSelectedIndex(0);
         channelList.addListSelectionListener( e ->
-                programList.setModel(getProgramList(dateList.getSelectedValue(), channelList.getSelectedValue()))
+                updateProgramList(dateList.getSelectedValue(), channelList.getSelectedValue())
         );
 
         GridBagConstraints constraints = new GridBagConstraints();
@@ -70,10 +67,12 @@ public class GUI {
             dates.addElement(formatter.format(calendar.getTime()));
         }
 
+        logger.info("Creating date list panel");
+
         dateList = new JList<>(dates);
         dateList.setSelectedIndex(0);
         dateList.addListSelectionListener(e ->
-                programList.setModel(getProgramList(dateList.getSelectedValue(), channelList.getSelectedValue()))
+                updateProgramList(dateList.getSelectedValue(), channelList.getSelectedValue())
         );
 
         constraints.gridheight = 1;
@@ -84,7 +83,10 @@ public class GUI {
         mainPanel.add(new JScrollPane(dateList), constraints);
 
         //program list
-        programList = new JList<>(getProgramList(today, channelList.getSelectedValue()));
+
+        logger.info("Creating program list panel");
+
+        programList = new JList<>();
 
         constraints.gridheight = 2;
         constraints.gridwidth = 2;
@@ -94,32 +96,45 @@ public class GUI {
         mainPanel.add(new JScrollPane(programList), constraints);
 
         //frame
+
+        logger.info("Creating window");
+
+        JFrame window = new JFrame("TVProgramme");
         window.add(mainPanel);
         window.setSize(980,600);
         window.setLocationRelativeTo(null);
         window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         window.setVisible(true);
+
+        updateProgramList(today, channelList.getSelectedValue());
     }
 
-    private DefaultListModel<String> getProgramList(String date, String channel){
+    private void updateProgramList(String date, String channel) {
+        logger.info("Updating channel list...");
+
         DefaultListModel<String> programs = new DefaultListModel<>();
-        try {
-            if(!map.containsKey(date)) {
-                LinkedHashMap<String, ArrayList<Program>> data = JsonDownloader.JsonDownload(date);
-                if (data.isEmpty()){
-                    throw new Exception("Error while downloading JSON data");
-                }
-                map.put(date, data);
-            }
+
+        Runnable subRoutine = () -> {
             map.get(date).get(channel).forEach((Program p) -> {
                 programs.addElement(p.getHour() + " - " + p.getName());
             });
+
+            programList.setModel(programs);
+            logger.info("Channel list updated!");
+        };
+
+        if(map.containsKey(date)) {
+            subRoutine.run();
+            return;
         }
-        catch(Exception e) {
-            logger.error(e);
-            return null;
-        }
-        return programs;
+
+        new Thread(() -> {
+            LinkedHashMap<String, ArrayList<Program>> data = JsonDownloader.JsonDownload(date);
+            if (data != null && !data.isEmpty()){
+                map.put(date, data);
+                subRoutine.run();
+            }
+        }).start();
     }
 }
 
