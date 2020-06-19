@@ -1,8 +1,7 @@
 package pl.edu.agh.student.dejakraj.tvprogramme;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -17,6 +16,9 @@ public class GUI {
     private final JFrame window;
 
     private LinkedHashMap<String, LinkedHashMap<String, ArrayList<Program>>> map = new LinkedHashMap<String, LinkedHashMap<String, ArrayList<Program>>>();
+
+    private JPanel mainPanel;
+
     private JList<String> channelList; //channels
     private JList<String> dateList; //dates
     private JList<String> programList; //programs
@@ -38,14 +40,26 @@ public class GUI {
             channels.addElement(key);
         });
 
+        mainPanel = new JPanel(new GridBagLayout());
+
         channelList = new JList<>(channels);
         channelList.setSelectedIndex(0);
-        channelList.setBounds(20,20, 200,500);
         channelList.addListSelectionListener( e ->
                 programList.setModel(getProgramList(dateList.getSelectedValue(), channelList.getSelectedValue()))
         );
 
-        window.add(channelList);
+        GridBagConstraints constraints = new GridBagConstraints();
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.weightx = 1f;
+        constraints.weighty = 1f;
+        constraints.insets = new Insets(10, 10, 10, 10);
+        constraints.gridheight = 3;
+        constraints.gridwidth = 1;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+
+        mainPanel.add(channelList, constraints);
 
         //date list
         DefaultListModel<String> dates = new DefaultListModel<>();
@@ -58,20 +72,31 @@ public class GUI {
 
         dateList = new JList<>(dates);
         dateList.setSelectedIndex(0);
-        dateList.setBounds(240,20, 700,100);
         dateList.addListSelectionListener(e ->
                 programList.setModel(getProgramList(dateList.getSelectedValue(), channelList.getSelectedValue()))
         );
-        window.add(dateList);
+
+        constraints.gridheight = 1;
+        constraints.gridwidth = 2;
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+
+        mainPanel.add(dateList, constraints);
 
         //program list
         programList = new JList<>(getProgramList(today, channelList.getSelectedValue()));
-        programList.setBounds(240,140, 700,380);
-        window.add(programList);
+
+        constraints.gridheight = 2;
+        constraints.gridwidth = 2;
+        constraints.gridx = 1;
+        constraints.gridy = 1;
+
+        mainPanel.add(programList, constraints);
 
         //frame
+        window.add(mainPanel);
         window.setSize(980,600);
-        window.setLayout(null);
+        window.setLocationRelativeTo(null);
         window.setVisible(true);
     }
 
